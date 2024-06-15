@@ -1,0 +1,9 @@
+{
+  "short_name": "Привет, мир!",
+  "name": "",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#161616",
+  "background_color": "#161616"
+}
