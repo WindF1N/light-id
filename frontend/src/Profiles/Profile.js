@@ -29,38 +29,34 @@ function Profile({access, setAccess, refresh, setRefresh, setRequestUser, reques
   const [firstPage, setFirstPage] = useState("/api/posts/user/"+username+"?page=1")
 
   useEffect(() => {
-    if (access) {
-      if (!user){
-        service.getUserByUsername(username, {'Authorization': `Bearer ${access}`}).then(function(result){
-          if (result.status === 200){
-            setUser(result.data.data);
-            setRefreshRequired(false);
-          }else if (result.status === 401){
-            setRefreshRequired(true);
-          }
-        })
-      }
+    if (!user){
+      service.getUserByUsername(username).then(function(result){
+        if (result.status === 200){
+          setUser(result.data.data);
+          setRefreshRequired(false);
+        }else if (result.status === 401){
+          setRefreshRequired(true);
+        }
+      })
     }
   }, [access, user])
 
   useEffect(() => {
-    if (access){
-      if (!stop){
-        if (loading){
-          service.getPostsByURL(nextPage, {'Authorization': `Bearer ${access}`}).then(function (result) {
-            if (result.status === 200){
-              setRefreshRequired(false);
-              setLoading(false);
-              if (result.data.nextlink === firstPage){
-                setStop(true)
-              }
-              setPosts([...posts, ...result.data.result]);
-              setNextPage(result.data.nextlink);
-            }else if (result.status === 401){
-              setRefreshRequired(true);
+    if (!stop){
+      if (loading){
+        service.getPostsByURL(nextPage).then(function (result) {
+          if (result.status === 200){
+            setRefreshRequired(false);
+            setLoading(false);
+            if (result.data.nextlink === firstPage){
+              setStop(true)
             }
-          });
-        }
+            setPosts([...posts, ...result.data.result]);
+            setNextPage(result.data.nextlink);
+          }else if (result.status === 401){
+            setRefreshRequired(true);
+          }
+        });
       }
     }
   }, [access, stop, loading])
@@ -153,11 +149,11 @@ function Profile({access, setAccess, refresh, setRefresh, setRequestUser, reques
         <>
           <div className="profile">
             <div className="profileHeader">
-              <div>
-                {user.username} {requestUser.username === user.username && <img src={require('../Main/images/arrow-down.svg').default} alt=""/>}
+              <div style={{width: "auto"}}>
+                {user.username} {requestUser?.username === user.username && <img src={require('../Main/images/arrow-down.svg').default} alt=""/>}
               </div>
               {requestUser ?
-                requestUser.username === user.username ?
+                requestUser?.username === user.username ?
                   <div><Link to="/settings/main"><img src={require('../Main/images/settings.svg').default} alt=""/></Link></div>
                 : <div><img src={require('../Main/images/more.svg').default} alt=""/></div>
               : null}
@@ -193,7 +189,7 @@ function Profile({access, setAccess, refresh, setRefresh, setRequestUser, reques
                 </div>
                 </Link>
                 {usersCount ?
-                  user.username === requestUser.username &&
+                  user.username === requestUser?.username &&
                   <Link to="/search/all#profiles">
                   <div className="stat">
                     <div>{ usersCount }</div>
@@ -204,7 +200,7 @@ function Profile({access, setAccess, refresh, setRefresh, setRequestUser, reques
 
                 {requestUser ?
                   <>
-                  {requestUser.username === user.username ? null :
+                  {requestUser?.username === user.username ? null :
                     <div className="buttons">
                       {user.is_sub ?
                         <div className="button" onClick={subscribe} data-subs="true">Отписаться</div>
@@ -237,7 +233,7 @@ function Profile({access, setAccess, refresh, setRefresh, setRequestUser, reques
             <Route path="/albums" exact element={<ProfileAlbums />} />
           </Routes>
           <Buttons access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>
-          {requestUser.username !== user.username && <Back />}
+          {requestUser?.username !== user.username && <Back />}
         </>
       : null
   );

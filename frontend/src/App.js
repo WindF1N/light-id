@@ -12,6 +12,7 @@ import ProfileSubscribes from './Profiles/ProfileSubscribes'
 import ProfileSubscribers from './Profiles/ProfileSubscribers'
 import Activity from './Activity/Activity'
 import DeleteProfile from './Profiles/DeleteProfile'
+import Login from './Auth/Login'
 
 import Settings from './Profiles/Settings'
 
@@ -79,10 +80,31 @@ function App() {
     }
   }, [access, requestUser])
 
+  useEffect(() => {
+    if (!requestUser && window.Telegram) {
+      if (window.Telegram.WebApp.initDataUnsafe.user) {
+        setLoading(true);
+        service.login({username_or_phone: window.Telegram.WebApp.initDataUnsafe.user.username, password: window.Telegram.WebApp.initDataUnsafe.user.id}).then(function(result){
+          if (result.status === 200){
+            setLoading(false);
+            localStorage.setItem('accessToken', result.data.access);
+            setAccess(result.data.access);
+            localStorage.setItem('refreshToken', result.data.refresh);
+            setRefresh(result.data.refresh);
+          }else if (result.status === 401){
+            if (result.data.detail === "No active account found with the given credentials"){
+              setLoading(false);
+            }
+          }
+        })
+      }
+    }
+  }, [requestUser])
+
   const submitHundler = e => {
     e.preventDefault();
     setLoading(true);
-    service.login({phone: phone, password: password}).then(function(result){
+    service.login({username_or_phone: phone, password: password}).then(function(result){
       if (result.status === 200){
         setLoading(false);
         setPassword('');
@@ -129,31 +151,31 @@ function App() {
 
   return (
     <>
-      {access ?
-        <BrowserRouter>
-          {!requestUser?.active ?
-            <Routes>
-              <Route path="*" exact element={<Settings access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>}/>
-            </Routes>
-            :
-            <Routes>
-              <Route path="/" exact element={<Main access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired} posts={posts} setPosts={setPosts} nextPage={nextPage} setNextPage={setNextPage} stop={stop} setStop={setStop} firstPage={firstPage}/>} />
-              <Route path="/p/:post_id/comments" exact element={<PostComments access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/:username/*" exact element={<Profile access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired} usersCount={usersCount}/>} />
-              <Route path="/:username/posts" exact element={<ProfilePosts access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/:username/subscribes" exact element={<ProfileSubscribes access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/:username/subscribers" exact element={<ProfileSubscribers access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/search/all" exact element={<SearchGrid access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/search/all/:search" exact element={<ActiveSearch access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/messenger/inbox" exact element={<Chats access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/messenger/inbox/:id" exact element={<Chat access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/activity/all" exact element={<Activity access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/settings/main" exact element={<Settings access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
-              <Route path="/settings/delete/profile" exact element={<DeleteProfile/>} />
-            </Routes>
-          }
-        </BrowserRouter>
-      :
+      <BrowserRouter>
+        {/* {!requestUser?.active ?
+          <Routes>
+            <Route path="*" exact element={<Settings access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>}/>
+          </Routes>
+          : */}
+          <Routes>
+            <Route path="/" exact element={<Main access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired} posts={posts} setPosts={setPosts} nextPage={nextPage} setNextPage={setNextPage} stop={stop} setStop={setStop} firstPage={firstPage}/>} />
+            <Route path="/p/:post_id/comments" exact element={<PostComments access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/:username/*" exact element={<Profile access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired} usersCount={usersCount}/>} />
+            <Route path="/:username/posts" exact element={<ProfilePosts access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/:username/subscribes" exact element={<ProfileSubscribes access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/:username/subscribers" exact element={<ProfileSubscribers access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/search/all" exact element={<SearchGrid access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/search/all/:search" exact element={<ActiveSearch access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/messenger/inbox" exact element={<Chats access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/messenger/inbox/:id" exact element={<Chat access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/activity/all" exact element={<Activity access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/settings/main" exact element={<Settings access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} requestUser={requestUser} setRequestUser={setRequestUser} setRefreshRequired={setRefreshRequired}/>} />
+            <Route path="/settings/delete/profile" exact element={<DeleteProfile/>} />
+            <Route path="/auth/login" exact element={<Login access={access} setAccess={setAccess} refresh={refresh} setRefresh={setRefresh} refreshRequired={refreshRequired} setRefreshRequired={setRefreshRequired} loading={loading} setLoading={setLoading} error={error} setError={setError} requestUser={requestUser} setRequestUser={setRequestUser} usersCount={usersCount} setUsersCount={setUsersCount} />} />
+          </Routes>
+        {/* } */}
+      </BrowserRouter>
+      {/* :
         <div className="auth" style={{height: window.innerHeight}}>
           <div className="form">
             <div className="logo-text">Welcome to the World of</div>
@@ -171,7 +193,7 @@ function App() {
             <div className="under-text">Продолжая использовать приложение, вы соглашаетесь<br/>с <a href="#">Пользовательским соглашеним</a> LIGHT id</div>
           </div>
         </div>
-      }
+      } */}
     </>
   );
 }

@@ -27,10 +27,9 @@ function ActiveSearch({access, setAccess, refresh, setRefresh, setRequestUser, r
   const [firstPageProfiles, setFirstPageProfiles] = useState("/api/profiles/search?search="+search+"&page=1")
 
   useEffect(() => {
-    if (access){
       if (!stopPosts){
         if (loadingPosts){
-          service.getPostsByURL(nextPagePosts, {'Authorization': `Bearer ${access}`}).then(function (result) {
+          service.getPostsByURL(nextPagePosts).then(function (result) {
             if (result.status === 200){
               setRefreshRequired(false);
               setLoadingPosts(false);
@@ -45,27 +44,24 @@ function ActiveSearch({access, setAccess, refresh, setRefresh, setRequestUser, r
           });
         }
       }
-    }
   }, [access, stopPosts, loadingPosts])
 
   useEffect(() => {
-    if (access){
-      if (!stopProfiles){
-        if (loadingProfiles){
-          service.getPostsByURL(nextPageProfiles, {'Authorization': `Bearer ${access}`}).then(function (result) {
-            if (result.status === 200){
-              setRefreshRequired(false);
-              setLoadingProfiles(false);
-              if (result.data.nextlink === firstPageProfiles){
-                setStopProfiles(true)
-              }
-              setProfiles([...profiles, ...result.data.result]);
-              setNextPageProfiles(result.data.nextlink);
-            }else if (result.status === 401){
-              setRefreshRequired(true);
+    if (!stopProfiles){
+      if (loadingProfiles){
+        service.getPostsByURL(nextPageProfiles).then(function (result) {
+          if (result.status === 200){
+            setRefreshRequired(false);
+            setLoadingProfiles(false);
+            if (result.data.nextlink === firstPageProfiles){
+              setStopProfiles(true)
             }
-          });
-        }
+            setProfiles([...profiles, ...result.data.result]);
+            setNextPageProfiles(result.data.nextlink);
+          }else if (result.status === 401){
+            setRefreshRequired(true);
+          }
+        });
       }
     }
   }, [access, stopProfiles, loadingProfiles])

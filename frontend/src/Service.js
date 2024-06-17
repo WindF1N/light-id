@@ -1,5 +1,5 @@
 import axios from 'axios';
-const API_URL = 'https://backend.idlpro.ru';
+const API_URL = 'http://127.0.0.1:8000';
 
 export default class Service{
 
@@ -21,10 +21,9 @@ export default class Service{
 		.catch(error => error.response);
 	}
 
-	getUserByUsername(username, headers) {
+	getUserByUsername(username) {
 		const url = `${API_URL}/api/user/${username}`;
 		return axios.get(url, {
-			headers: headers,
 			username: username
 		})
 		.then(response => response)
@@ -95,11 +94,9 @@ export default class Service{
 		.catch(error => error.response);
 	}
 
-	getPostsByURL(link, headers) {
+	getPostsByURL(link) {
 		const url = `${API_URL}${link}`;
-		return axios.get(url, {
-	    headers: headers
-	  })
+		return axios.get(url)
 		.then(response => response)
 		.catch(error => error.response);
 	}
@@ -147,11 +144,9 @@ export default class Service{
 		.catch(error => error.response);
 	}
 
-	getPostComments(link, headers){
+	getPostComments(link){
 		const url = `${API_URL}${link}`;
-		return axios.get(url, {
-	    headers: headers
-	  })
+		return axios.get(url)
 		.then(response => response)
 		.catch(error => error.response);
 	}

@@ -98,28 +98,28 @@ function Comments({access, setAccess, refresh, setRefresh, requestUser, setReque
           }
         })
       }
+    } else if (commentText) {
+      navigate("/auth/login")
     }
   }, [access, commentText, posts])
 
   useEffect(() => {
-    if (access){
-      if (!stop){
-        if (loading) {
-          service.getPostComments(nextPage, {'Authorization': `Bearer ${access}`}).then(function(result){
-            if (result.status === 200){
-              setRefreshRequired(false);
-              setLoading(false);
-              if (result.data.nextlink === firstPage){
-                setStop(true)
-              }
-              setComments([...comments, ...result.data.result]);
-              setNextPage(result.data.nextlink);
-              setPosts([...posts.filter((n) => post.id < n.id), {...posts.filter((n) => post.id === n.id)[0], comments_count: result.data.count}, ...posts.filter((n) => post.id > n.id)])
-            }else if (result.status === 401){
-              setRefreshRequired(true);
+    if (!stop){
+      if (loading) {
+        service.getPostComments(nextPage).then(function(result){
+          if (result.status === 200){
+            setRefreshRequired(false);
+            setLoading(false);
+            if (result.data.nextlink === firstPage){
+              setStop(true)
             }
-          })
-        }
+            setComments([...comments, ...result.data.result]);
+            setNextPage(result.data.nextlink);
+            setPosts([...posts.filter((n) => post.id < n.id), {...posts.filter((n) => post.id === n.id)[0], comments_count: result.data.count}, ...posts.filter((n) => post.id > n.id)])
+          }else if (result.status === 401){
+            setRefreshRequired(true);
+          }
+        })
       }
     }
   }, [access, stop, loading, posts])
@@ -136,6 +136,8 @@ function Comments({access, setAccess, refresh, setRefresh, requestUser, setReque
           }
         });
       }
+    } else if (commentLikedId) {
+      navigate("/auth/login")
     }
   }, [access, commentLikedId])
 
@@ -220,7 +222,7 @@ function Comments({access, setAccess, refresh, setRefresh, requestUser, setReque
       </div>
       <div className="add-comment">
         <div className="avatar">
-          <img src={requestUser.avatar ? requestUser.avatar : "http://backend.idlpro.ru/media/avatars/non/non-avatar.svg"} alt="" />
+          <img src={requestUser?.avatar ? requestUser.avatar : "http://backend.idlpro.ru/media/avatars/non/non-avatar.svg"} alt="" />
         </div>
         <div className="add">
           <textarea placeholder="Введите текст комментария" ref={newcomment} onChange={checkInput}></textarea>

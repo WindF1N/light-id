@@ -14,9 +14,9 @@ function Main({access, setAccess, refresh, setRefresh, requestUser, setRequestUs
     <>
       <Header />
       <Stories />
-      <Services />
-      <Vides />
-      <YouLIGHT />
+      {/* <Services /> */}
+      {/* <Vides /> */}
+      {/* <YouLIGHT /> */}
       <Posts access={access}
              setAccess={setAccess}
              refresh={refresh}

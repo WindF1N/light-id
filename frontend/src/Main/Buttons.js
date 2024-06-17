@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import Crop from '../Crop/Crop'
 
@@ -7,6 +7,8 @@ import Service from './../Service'
 const service = new Service()
 
 function Buttons({access, setAccess, refresh, setRefresh, requestUser, setRequestUser, setRefreshRequired}) {
+
+  const navigate = useNavigate();
 
   const [files, setFiles] = useState([])
   const [next, setNext] = useState(false)
@@ -56,17 +58,23 @@ function Buttons({access, setAccess, refresh, setRefresh, requestUser, setReques
     setNext(true);
   }
 
+  const handleFocus = () => {
+    if (!requestUser) {
+      navigate("/auth/login")
+    }
+  }
+
   return (
     <>
       <div className="main buttons">
         <div className="main button item" >
           <img src={require('./images/menu-add.svg').default} alt=""/>
           <div className="hidden">
-            <input type="file" name="new_post" accept="image/*" multiple onChange={loadFiles} />
+            <input type="file" name="new_post" accept="image/*" multiple onChange={loadFiles} onFocus={handleFocus} />
           </div>
         </div>
         <div className="main button item">
-          <Link to="/messenger/inbox">
+          <Link to={requestUser ? "/messenger/inbox" : "/auth/login"}>
           <img src={require('./images/messanger.svg').default} alt=""/>
           </Link>
         </div>
@@ -90,7 +98,10 @@ function Buttons({access, setAccess, refresh, setRefresh, requestUser, setReques
             <Link to={"/"+requestUser.username}>
               <img src={requestUser.avatar ? requestUser.avatar : "http://backend.idlpro.ru/media/avatars/non/non-avatar.svg"} alt={requestUser.name} />
             </Link>
-          : null}
+          : 
+            <Link to={"/auth/login"}>
+              <img src={"http://backend.idlpro.ru/media/avatars/non/non-avatar.svg"} alt={requestUser?.name} />
+            </Link>}
         </div>
         <div className="main button" onClick={openMenu} id="open-menu">
           <img src={require('./images/menu-button.svg').default} alt=""/>

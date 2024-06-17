@@ -121,20 +121,20 @@ function Chats({access, setAccess, refresh, setRefresh, setRequestUser, requestU
               <Link to={"/messenger/inbox/"+chat.id} key={chat.id}>
               <div className="chat">
                 <div className="avatar">
-                {chat.memberone.username !== requestUser.username ?
+                {chat.memberone.username !== requestUser?.username ?
                   <img src={chat.memberone.avatar ? chat.memberone.avatar : "http://backend.idlpro.ru/media/avatars/non/non-avatar.svg"} alt={chat.memberone.name} />
                 : <img src={chat.membertwo.avatar ? chat.membertwo.avatar : "http://backend.idlpro.ru/media/avatars/non/non-avatar.svg"} alt={chat.membertwo.name} />}
                 </div>
                 <div className="middle">
                   <div className="chatName">
-                    {chat.memberone.username !== requestUser.username ?
+                    {chat.memberone.username !== requestUser?.username ?
                       chat.memberone.name ? chat.memberone.name : chat.memberone.username
                     : chat.membertwo.name ? chat.membertwo.name : chat.membertwo.username}
                   </div>
                   {chat.last_message ?
                       <div className="lastMessage">
                         <div className="text">
-                          {chat.last_message.sender.username === requestUser.username ? "Вы: " : null}
+                          {chat.last_message.sender.username === requestUser?.username ? "Вы: " : null}
                           {chat.last_message.text}
                         </div>
                       </div>

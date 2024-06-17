@@ -29,10 +29,9 @@ function SearchGrid({access, setAccess, refresh, setRefresh, setRequestUser, req
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    if (access){
       if (!stop){
         if (loading){
-          service.getPostsByURL(nextPage, {'Authorization': `Bearer ${access}`}).then(function (result) {
+          service.getPostsByURL(nextPage).then(function (result) {
             if (result.status === 200){
               setRefreshRequired(false);
               setLoading(false);
@@ -47,14 +46,12 @@ function SearchGrid({access, setAccess, refresh, setRefresh, setRequestUser, req
           });
         }
       }
-    }
   }, [access, stop, loading])
 
   useEffect(() => {
-    if (access){
       if (!stopProfiles){
         if (loadingProfiles){
-          service.getPostsByURL(nextPageProfiles, {'Authorization': `Bearer ${access}`}).then(function (result) {
+          service.getPostsByURL(nextPageProfiles).then(function (result) {
             if (result.status === 200){
               setRefreshRequired(false);
               setLoadingProfiles(false);
@@ -69,7 +66,6 @@ function SearchGrid({access, setAccess, refresh, setRefresh, setRequestUser, req
           });
         }
       }
-    }
   }, [access, stopProfiles, loadingProfiles])
 
   useEffect(() => {

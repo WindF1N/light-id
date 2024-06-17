@@ -1,0 +1,7 @@
+venv
+static
+media
+build
+node_modules
+__pycache__
+migrations

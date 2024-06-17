@@ -27,23 +27,21 @@ function Posts({access, setAccess, refresh, setRefresh, requestUser, setRequestU
   const [showPostComments, setShowPostComments] = useState(null)
 
   useEffect(() => {
-    if (access){
-      if (!stop){
-        if (loading){
-          service.getPostsByURL(nextPage, {'Authorization': `Bearer ${access}`}).then(function (result) {
-            if (result.status === 200){
-              setRefreshRequired(false);
-              setLoading(false);
-              if (result.data.nextlink === firstPage){
-                setStop(true)
-              }
-              setPosts([...posts, ...result.data.result]);
-              setNextPage(result.data.nextlink);
-            }else if (result.status === 401){
-              setRefreshRequired(true);
+    if (!stop){
+      if (loading){
+        service.getPostsByURL(nextPage).then(function (result) {
+          if (result.status === 200){
+            setRefreshRequired(false);
+            setLoading(false);
+            if (result.data.nextlink === firstPage){
+              setStop(true)
             }
-          });
-        }
+            setPosts([...posts, ...result.data.result]);
+            setNextPage(result.data.nextlink);
+          }else if (result.status === 401){
+            setRefreshRequired(true);
+          }
+        });
       }
     }
   }, [access, stop, loading])
@@ -134,31 +132,39 @@ function Posts({access, setAccess, refresh, setRefresh, requestUser, setRequestU
   }
 
   const addLike = (id, post, e) => {
-    setPostLikedId(id);
-    if (e.target.dataset.liked == "false"){
-      e.target.src = require('./images/like-active.svg').default;
-      e.target.dataset.liked = "true";
-      post.likes_count = post.likes_count + 1;
-    }else{
-      e.target.src = require('./images/like.svg').default;
-      e.target.dataset.liked = "false";
-      post.likes_count = post.likes_count - 1;
+    if (requestUser) {
+      setPostLikedId(id);
+      if (e.target.dataset.liked == "false"){
+        e.target.src = require('./images/like-active.svg').default;
+        e.target.dataset.liked = "true";
+        post.likes_count = post.likes_count + 1;
+      }else{
+        e.target.src = require('./images/like.svg').default;
+        e.target.dataset.liked = "false";
+        post.likes_count = post.likes_count - 1;
+      }
+    } else {
+      navigate("/auth/login")
     }
   }
 
   const savePost = (id, post, e) => {
-    setPostSavedId(id);
-    if (e.target.dataset.saved == "false"){
-      e.target.src = require('./images/save-active.svg').default;
-      e.target.dataset.saved = "true";
-    }else{
-      e.target.src = require('./images/save.svg').default;
-      e.target.dataset.saved = "false";
+    if (requestUser) {
+      setPostSavedId(id);
+      if (e.target.dataset.saved == "false"){
+        e.target.src = require('./images/save-active.svg').default;
+        e.target.dataset.saved = "true";
+      }else{
+        e.target.src = require('./images/save.svg').default;
+        e.target.dataset.saved = "false";
+      }
+    } else {
+      navigate("/auth/login")
     }
   }
 
   const showMore = (e) => {
-    if (requestUser.username === e.target.dataset.username){
+    if (requestUser?.username === e.target.dataset.username){
       setShowActionsPost(true);
       setSelectPostId(e.target.dataset.postid);
     }
@@ -190,10 +196,14 @@ function Posts({access, setAccess, refresh, setRefresh, requestUser, setRequestU
   }
 
   const addComment = (c, e) => {
-    if (document.querySelector('#post'+c.id+' .lastComment .add textarea').value){
-      setSelectPost(c);
-      setCommentText(document.querySelector('#post'+c.id+' .lastComment .add textarea').value);
-      document.querySelector('#post'+c.id+' .lastComment .add textarea').value = null;
+    if (requestUser) {
+      if (document.querySelector('#post'+c.id+' .lastComment .add textarea').value){
+        setSelectPost(c);
+        setCommentText(document.querySelector('#post'+c.id+' .lastComment .add textarea').value);
+        document.querySelector('#post'+c.id+' .lastComment .add textarea').value = null;
+      }
+    } else {
+      navigate("/auth/login")
     }
   }
 
@@ -220,10 +230,10 @@ function Posts({access, setAccess, refresh, setRefresh, requestUser, setRequestU
               </div>
               <div className="user">
                 <div><Link to={"/"+c.user.username}>{c.user.username}</Link></div>
-                <div>{c.user.subscribers_count} подписчиков</div>
+                <div>{c.user?.subscribers_count} подписчиков</div>
                 <div></div>
               </div>
-              {requestUser.username === c.user.username ?
+              {requestUser?.username === c.user.username ?
                 <div className="more" onClick={showMore} data-username={c.user.username} data-postid={c.id}>
                   <img src={require('./images/more.svg').default} alt=""/>
                 </div>
@@ -307,7 +317,7 @@ function Posts({access, setAccess, refresh, setRefresh, requestUser, setRequestU
                 :
                   <>
                     <div className="avatar">
-                      <img src={requestUser.avatar ? requestUser.avatar : "http://backend.idlpro.ru/media/avatars/non/non-avatar.svg"} alt="" />
+                      <img src={requestUser?.avatar ? requestUser.avatar : "http://backend.idlpro.ru/media/avatars/non/non-avatar.svg"} alt="" />
                     </div>
                     <div className="add">
                       <textarea placeholder="Введите текст комментария" onChange={checkInput} onClick={(e) => e.stopPropagation()}></textarea>
