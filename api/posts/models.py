@@ -57,8 +57,12 @@ def post_save_postitem(sender, instance, *args, **kwargs):
         resized_image = image.resize((int(w*0.05), int(h*0.05)), Image.LANCZOS)
 
         placeholder = 'placeholder/' + str(uuid.uuid4()) + '.jpeg'
+        placeholder_path = os.path.join(os.path.dirname(instance.file.path), placeholder)
 
-        resized_image.save(os.path.join(os.path.dirname(instance.file.path), placeholder), "JPEG")
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(placeholder_path), exist_ok=True)
+
+        resized_image.save(placeholder_path, "JPEG")
         image.close()
 
         instance.placeholder = placeholder
@@ -83,8 +87,8 @@ def post_save_postitem(sender, instance, *args, **kwargs):
         resized_path = os.path.join(os.path.dirname(instance.file.path), 'resize', os.path.basename(instance.file.path))
         resized_dir = os.path.dirname(resized_path)
 
-        if not os.path.exists(resized_dir):
-            os.makedirs(resized_dir)
+        # Ensure the directory exists
+        os.makedirs(resized_dir, exist_ok=True)
 
         resized_image.save(resized_path, "JPEG", quality=100, optimize=True)
         instance.file_resize = '/'.join(resized_path.split('/')[-4:])
