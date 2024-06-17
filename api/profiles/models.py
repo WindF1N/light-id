@@ -120,17 +120,23 @@ def post_save_user(sender, instance, *args, **kwargs):
 
     if instance.avatar:
         if instance.avatar_resize.name != instance.avatar.name:
-            size = 225, 400
+            size = (225, 400)
             image = Image.open(instance.avatar.path).convert('RGB')
-            image.thumbnail(size, Image.ANTIALIAS)
-            path = instance.avatar.path.split('/')
-            path.insert(9, 'resize')
-            path = '/'.join(path)
-            if not os.path.exists('/'.join(path.split('/')[:-1])):
-                os.mkdir('/'.join(path.split('/')[:-1]))
-            image.save(path, "JPEG", quality=100, optimize=True)
-            instance.avatar_resize = '/'.join(path.split('/')[-4:])
+            image.thumbnail(size, Image.LANCZOS)
 
+            # Создаем путь для сохранения измененного изображения
+            resize_path = os.path.join(os.path.dirname(instance.avatar.path), 'resize', os.path.basename(instance.avatar.path))
+            resize_dir = os.path.dirname(resize_path)
+
+            # Убеждаемся, что директория существует
+            if not os.path.exists(resize_dir):
+                os.makedirs(resize_dir)
+
+            # Сохраняем измененное изображение
+            image.save(resize_path, "JPEG", quality=100, optimize=True)
+            instance.avatar_resize = '/'.join(resize_path.split('/')[-4:])
+
+    # Отключаем сигнал, чтобы избежать рекурсии
     post_save.disconnect(post_save_user, sender=sender)
     instance.save()
     post_save.connect(post_save_user, sender=sender)
