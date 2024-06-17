@@ -51,13 +51,14 @@ class Post(models.Model):
 def post_save_postitem(sender, instance, *args, **kwargs):
     if not instance.placeholder:
         image = Image.open(instance.file.path).convert('RGB')
-        h, w = ImageOps.exif_transpose(image).height, ImageOps.exif_transpose(image).width
+        image = ImageOps.exif_transpose(image)
+        h, w = image.height, image.width
 
-        image = image.resize((int(w*0.05), int(h*0.05)))
+        resized_image = image.resize((int(w*0.05), int(h*0.05)), Image.LANCZOS)
 
         placeholder = 'placeholder/' + str(uuid.uuid4()) + '.jpeg'
 
-        ImageOps.exif_transpose(image).save(instance.file.path.split('posts/')[0] + placeholder, "JPEG")
+        resized_image.save(os.path.join(os.path.dirname(instance.file.path), placeholder), "JPEG")
         image.close()
 
         instance.placeholder = placeholder
@@ -68,18 +69,25 @@ def post_save_postitem(sender, instance, *args, **kwargs):
 
     if not instance.aspect:
         image = Image.open(instance.file.path).convert('RGB')
-        h, w = ImageOps.exif_transpose(image).height, ImageOps.exif_transpose(image).width
-        size = 1080, (1080 * h) / w
-        instance.aspect = "{0}/{1}".format(1080, (1080 * h) / w)
-        image = Image.open(instance.file.path).convert('RGB')
-        image.thumbnail(size, Image.ANTIALIAS)
+        image = ImageOps.exif_transpose(image)
+        h, w = image.height, image.width
+        size = 1080, int((1080 * h) / w)
+        instance.aspect = "{0}/{1}".format(1080, int((1080 * h) / w))
+
+        resized_image = image.copy()
+        resized_image.thumbnail(size, Image.LANCZOS)
+
         path = instance.file.path.split('/')
         path.insert(9, 'resize')
         path = '/'.join(path)
-        if not os.path.exists('/'.join(path.split('/')[:-1])):
-            os.mkdir('/'.join(path.split('/')[:-1]))
-        image.save(path, "JPEG", quality=100, optimize=True)
-        instance.file_resize = '/'.join(path.split('/')[-4:])
+        resized_path = os.path.join(os.path.dirname(instance.file.path), 'resize', os.path.basename(instance.file.path))
+        resized_dir = os.path.dirname(resized_path)
+
+        if not os.path.exists(resized_dir):
+            os.makedirs(resized_dir)
+
+        resized_image.save(resized_path, "JPEG", quality=100, optimize=True)
+        instance.file_resize = '/'.join(resized_path.split('/')[-4:])
 
         post_save.disconnect(post_save_postitem, sender=sender)
         instance.save()
