@@ -2831,10 +2831,6 @@ a{
   border-radius: 8px;
 }
 
-.settings .block-form .inputs.withavatar{
-  width: calc(52.85vw);
-}
-
 .settings .block-form .inputs .input{
   width: calc(100% - 20px);
   position: relative;
@@ -3044,8 +3040,8 @@ a{
 }
 
 .settings .block-form .changeAvatar > img{
-  width: calc(47.15vw - 40px);
-  height: calc(((47.15vw  - 40px) * 16) / 9);
+  width: calc(185px * 9 / 16);
+  height: 185px;
   object-fit: cover;
   border-radius: 11px;
 }
@@ -3063,7 +3059,7 @@ a{
 }
 
 .settings .block-form .changeAvatar .icon img{
-  width: 30px;
+  width: 20px;
   padding: 5px;
   border-radius: 50%;
   background: rgba(34, 34, 34, .65);
@@ -3209,5 +3205,20 @@ a{
 
   to {
     height: auto;
+  }
+}
+
+@keyframes pulsate {
+  0% {
+      transform: scale(1);
+      opacity: 1;
+  }
+  50% {
+      transform: scale(1.1);
+      opacity: 1;
+  }
+  100% {
+      transform: scale(1);
+      opacity: 1;
   }
 }

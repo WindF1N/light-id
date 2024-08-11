@@ -129,6 +129,7 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
     setAccess(null);
     localStorage.removeItem('refreshToken');
     setRefresh(null);
+    navigate("/");
   }
 
   const onOff = (e) => {
@@ -183,7 +184,7 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
                 Фамилия
               </div>
             </div>
-            <div className="input">
+            {/* <div className="input">
               <select name="sex" onChange={changeInput} value={requestUser.sex}>
                 <option value="Мужской">Мужской</option>
                 <option value="Женский">Женский</option>
@@ -191,19 +192,19 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
               <div className="placeholder" style={requestUser.sex ? {transform: "translateY(-12px)", fontSize: "10px"} : {}} onClick={focusInput}>
                 Пол
               </div>
-            </div>
-            <div className="input">
+            </div> */}
+            <div className="input last">
               <input type="date" name="birth_date" value={requestUser.birth_date} onChange={changeInput}/>
               <div className="placeholder" style={requestUser.birth_date ? {transform: "translateY(-12px)", fontSize: "10px"} : {}} onClick={focusInput}>
                 Дата рождения
               </div>
             </div>
-            <div className="input last">
+            {/* <div className="input last">
               <input type="text" name="city" value={requestUser.city} onChange={changeInput}/>
               <div className="placeholder" style={requestUser.city ? {transform: "translateY(-12px)", fontSize: "10px"} : {}} onClick={focusInput}>
                 Город
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="changeAvatar">
             <img src={requestUser.avatar ? requestUser.avatar : "http://backend.idlpro.ru/media/avatars/non/non-avatar.svg"} alt=""/>
@@ -213,7 +214,7 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
             <input type="file" name="new_avatar" accept="image/*" onChange={changeAvatar}/>
           </div>
         </div>
-        <div className="block-form">
+        {/* <div className="block-form">
           <div className="inputs">
             <div className={showStatusSelect ? "button first" : "button last first"} onClick={() => {showStatusSelect ? setShowStatusSelect(false) : setShowStatusSelect(true)}}>
               <div className="placeholder">
@@ -251,7 +252,7 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="block-form">
           <div className="inputs">
             <div className="input first last">
@@ -263,7 +264,7 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
             </div>
           </div>
         </div>
-        <div className="block-form">
+        {/* <div className="block-form">
           <div className="inputs">
             <div className="button first last">
               <div className="placeholder">
@@ -271,8 +272,8 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
               </div>
             </div>
           </div>
-        </div>
-        <div className="block-form">
+        </div> */}
+        {/* <div className="block-form">
           <div className="inputs">
             <div className="button first last">
               <div className="placeholder">
@@ -507,11 +508,11 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="block-form">
           <div className="inputs">
-            <div className="button first">
+            {/* <div className="button first">
               <div className="placeholder">
                 Добавить новый аккаунт
               </div>
@@ -520,8 +521,8 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
               <div className="placeholder">
                 Добавить новый Бизнес аккаунт
               </div>
-            </div>
-            <div className="button" onClick={() => navigate('/settings/delete/profile')}>
+            </div> */}
+            <div className="button first" onClick={() => navigate('/settings/delete/profile')}>
               <div className="placeholder">
                 Удалить аккаунт
               </div>
@@ -534,7 +535,7 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
           </div>
         </div>
 
-        <div className="block-form">
+        {/* <div className="block-form">
           <div className="inputs">
             <div className="button first">
               <div className="placeholder">
@@ -587,7 +588,7 @@ function Settings({access, setAccess, refresh, setRefresh, setRequestUser, reque
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
       </div>
       {avatar && <CropAvatar avatar={avatar} setAvatar={setAvatar} requestUser={requestUser} setRequestUser={setRequestUser}/>}

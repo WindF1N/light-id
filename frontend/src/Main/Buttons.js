@@ -12,8 +12,10 @@ function Buttons({access, setAccess, refresh, setRefresh, requestUser, setReques
 
   const [files, setFiles] = useState([])
   const [next, setNext] = useState(false)
+  const [pulsate, setPulsate] = useState(true);
 
   const openMenu = e => {
+    setPulsate(false)
     e.preventDefault();
     if (document.querySelector('#open-menu').style.transform != 'rotate(180deg)'){
       document.querySelector('#open-menu').style.transform = 'rotate(180deg)';

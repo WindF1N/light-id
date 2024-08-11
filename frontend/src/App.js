@@ -50,6 +50,11 @@ function App() {
   const [usersCount, setUsersCount] = useState(null)
 
   useEffect(() => {
+    console.log('123')
+    window.Telegram.WebApp.expand();
+  }, [window.Telegram.WebApp])
+
+  useEffect(() => {
     if (refreshRequired) {
       service.refreshTokens(refresh).then(function(result){
         if (result.status === 200){
